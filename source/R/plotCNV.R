@@ -24,11 +24,11 @@ for (i in (chrom)) {
     region <- which(ratio$Chromosome==i)
 
    if (length(region)>0) {
-    plot(ratio$Start[region],ratio$Call[region],xlim = c(0,max(ratio$End[region])),ylim = c(0,max(ratio$Call)),xlab = paste ("Chromosome", i, "(position)"),ylab = "CNV",pch = ".",col = "black")
+    plot(ratio$Start[region],ratio$Call[region],xlim = c(0,max(ratio$End[region])),ylim = c(0,max(ratio$Call)),xlab = paste (i, "(position)"),ylab = "Absolute Copy Number",pch = ".",col = "black")
     region <- which(ratio$Chromosome==i  & ratio$Call>ploidy )
-    segments(ratio$Start[region],ratio$Call[region],ratio$End[region],ratio$Call[region],col = "red",lwd=2)
+    segments(ratio$Start[region],ratio$Call[region],ratio$End[region],ratio$Call[region],col = "red",lwd=8)
     region <- which(ratio$Chromosome==i  & ratio$Call<ploidy )
-    segments(ratio$Start[region],ratio$Call[region],ratio$End[region],ratio$Call[region],col = "blue",lwd=2)
+    segments(ratio$Start[region],ratio$Call[region],ratio$End[region],ratio$Call[region],col = "blue",lwd=8)
     region <- which(ratio$Chromosome==i  & ratio$Call==ploidy)
     segments(ratio$Start[region],ratio$Call[region],ratio$End[region],ratio$Call[region],col = "darkgreen",lwd=2)
    }
