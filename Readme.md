@@ -8,21 +8,24 @@ Make sure that these tools are added to your PATH variable
 * samtools ([link](https://sourceforge.net/projects/samtools/))
 * bedtools (>=2.26) ([link](http://bedtools.readthedocs.org/en/latest/content/installation.html))
 * openMPI  ([Installation Guide](http://lsi.ugr.es/~jmantas/pdp/ayuda/datos/instalaciones/Install_OpenMPI_en.pdf))
-* R-packages - DNACopy
+* R-packages - DNACopy, ParDNAcopy (https://cran.r-project.org/web/packages/ParDNAcopy/index.html)
 
 ## Installation
 Download the source code from https://github.com/vogetihrsh/pCNVD-1.0-dev, extract the zip file
 
 ```
-unzip pCNVD.zip
-cd pCNVD
+unzip SVINGS.zip
+cd SVINGS
 make 
 ```
 
 
 ## Usage
 ```
-# PREPROCESSEING STEP
+# CALCULATE OPTIMAL BIN/WINDOW SIZE
+./calOptBinSize -c <config file> -i <input BAM>
+
+# PRETREATMENT STEP
 ./pretreatment -i <input BAM> -z <bed file containing bins> -m < file contaning mappability values> -o <output prefix> 
 
 # SEGMENTATION
@@ -34,32 +37,12 @@ make
 # ANNOTATION 
 ./annotate -i <input bed file> -o <output prefix> <genome flag (--hg19 or --h19)>
 
-# CALCULATE OPTIMAL BIN/WINDOW SIZE
-./calOptBinSize -c <config file> -i <input BAM>
+# PlOT
+./plot <input bed file> <temp_file>
+
 ```
 #### Note:
 Preprocess, runSegmentation, callCNV should have same value for the parameter -o.
-
-### annotate 
-| FLAG  |REQUIRES VALUE/TYPE  |DESCRIPTION  | OPTIONAL/REQUIRED |
-| ---  | ---  | ---  | ---  |
-| -i  | Yes/STRING  |Input bed file contaning regions that needed to be annotated. | Required  |
-| -o  | Yes/STRING  |Output prefix for the generated bed file.  | Required |
-| - -hg18  | No/-  | hg18 genome flag. When used checks for the files contaning gene info (hg18.bed), DGV annotations (hg18DGV.bed), location annotation (hg18LocInfo.bed and gap annotations (hg18_gap.bed) in the annotation directory |Not required when --hg19 or --genome is used. |
-| - -hg19  | No/-  | hg19 genome flag. When used checks for the files contaning gene info (hg19.bed), DGV annotations (hg19DGV.bed), location annotation (hg19LocInfo.bed and gap annotations (hg19_gap.bed) in the annotation directory |Not required when --hg18 or --genome is used |
-| - -genome  | Yes/STRING  | Any genome other than hg18 and hg19 can be specified through this flag. It requires <genome>.bed, <genome>DGV.bed, <genome>_gap.bed and <genome>LocInfo.bed  files to be present in annotation directory. | Not required when --hg18 or --hg19 is used. |
-| --annDir | Yes/STRING  | Default: "SOURCEDIR/annotations". Path to the annotation directory. | Optional  |
-| - -help | No/-  | Prints usage statement. Should be exclusively used. | Optional | 
-
-### callCNV
-| FLAG  |REQUIRES VALUE/TYPE  |DESCRIPTION  | OPTIONAL/REQUIRED |
-| ---  | ---  | ---  | ---  |
-|-o |Yes/STRING | Output Prefix. | Required |
-|-z  | Yes/STRING | Bed file contanning bins. | Required |
-|- -hg18 |No/- | For hg18 genome. This flag will be used for getting the gap info (hg18_gap.bed) from the annotations directory. | Not required when --hg19 or --genome is used. |
-|- -hg19 |No/- | For hg19 genome. This flag will be used for getting the gap info (hg19_gap.bed) from the annotations directory. | Not required when --hg18 or --genome is used. |
-|- -genome |No/- | For genomes other than hg18 and hg19. This flag will be used for getting the gap info (<genome>_gap.bed) from the annotations directory. | Not required when --hg19 or --hg18 is used. |
-| - -help | No/-  | Prints usage statement. Should be exclusively used. | Optional | 
 
 ### calOptBinSize
 | FLAG  |REQUIRES VALUE/TYPE  |DESCRIPTION  | OPTIONAL/REQUIRED |
@@ -68,7 +51,7 @@ Preprocess, runSegmentation, callCNV should have same value for the parameter -o
 |-i  | Yes/STRING | Input BAM File. | Required |
 | - -help | No/-  | Prints usage statement. Should be exclusively used. | Optional | 
 
-### preprocess
+### pretreatment
 | FLAG  |REQUIRES VALUE/TYPE  |DESCRIPTION  | OPTIONAL/REQUIRED |
 | ---  | ---  | ---  | ---  |
 |-i  | Yes/STRING | Input BAM File. | Required |
@@ -91,7 +74,26 @@ Preprocess, runSegmentation, callCNV should have same value for the parameter -o
 |-d |No/- | When this flag is specified Circular Binary Segmentation algorithm is used for segmentation.  | Atleast one of -t and -d should be used. |
 | - -help | No/-  | Prints usage statement. Should be exclusively used. | Optional |
 
+### callCNV
+| FLAG  |REQUIRES VALUE/TYPE  |DESCRIPTION  | OPTIONAL/REQUIRED |
+| ---  | ---  | ---  | ---  |
+|-o |Yes/STRING | Output Prefix. | Required |
+|-z  | Yes/STRING | Bed file contanning bins. | Required |
+|- -hg18 |No/- | For hg18 genome. This flag will be used for getting the gap info (hg18_gap.bed) from the annotations directory. | Not required when --hg19 or --genome is used. |
+|- -hg19 |No/- | For hg19 genome. This flag will be used for getting the gap info (hg19_gap.bed) from the annotations directory. | Not required when --hg18 or --genome is used. |
+|- -genome |No/- | For genomes other than hg18 and hg19. This flag will be used for getting the gap info (<genome>_gap.bed) from the annotations directory. | Not required when --hg19 or --hg18 is used. |
+| - -help | No/-  | Prints usage statement. Should be exclusively used. | Optional | 
 
+### annotate 
+| FLAG  |REQUIRES VALUE/TYPE  |DESCRIPTION  | OPTIONAL/REQUIRED |
+| ---  | ---  | ---  | ---  |
+| -i  | Yes/STRING  |Input bed file contaning regions that needed to be annotated. | Required  |
+| -o  | Yes/STRING  |Output prefix for the generated bed file.  | Required |
+| - -hg18  | No/-  | hg18 genome flag. When used checks for the files contaning gene info (hg18.bed), DGV annotations (hg18DGV.bed), location annotation (hg18LocInfo.bed and gap annotations (hg18_gap.bed) in the annotation directory |Not required when --hg19 or --genome is used. |
+| - -hg19  | No/-  | hg19 genome flag. When used checks for the files contaning gene info (hg19.bed), DGV annotations (hg19DGV.bed), location annotation (hg19LocInfo.bed and gap annotations (hg19_gap.bed) in the annotation directory |Not required when --hg18 or --genome is used |
+| - -genome  | Yes/STRING  | Any genome other than hg18 and hg19 can be specified through this flag. It requires <genome>.bed, <genome>DGV.bed, <genome>_gap.bed and <genome>LocInfo.bed  files to be present in annotation directory. | Not required when --hg18 or --hg19 is used. |
+| --annDir | Yes/STRING  | Default: "SOURCEDIR/annotations". Path to the annotation directory. | Optional  |
+| - -help | No/-  | Prints usage statement. Should be exclusively used. | Optional | 
 
 
 
